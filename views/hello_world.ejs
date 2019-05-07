@@ -1,4 +1,4 @@
-app.get("/hello", (req, res) => {
-    let templateVars = { greeting: 'Hello World!' };
-    res.render("hello_world", templateVars);
-  });
+<% if(greeting) {%>
+    <!-- This line will only show if greeting is truthy -->
+    <h1><%= greeting %></h1>
+  <% }%>
