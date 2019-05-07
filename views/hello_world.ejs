@@ -1,0 +1,4 @@
+app.get("/hello", (req, res) => {
+    let templateVars = { greeting: 'Hello World!' };
+    res.render("hello_world", templateVars);
+  });
