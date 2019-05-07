@@ -2,3 +2,11 @@
     <!-- This line will only show if greeting is truthy -->
     <h1><%= greeting %></h1>
   <% }%>
+
+  <h2>Loop</h2>
+
+<ul>
+    <% drinks.forEach(function(drink) { %>
+        <li><%= drink.name %> - <%= drink.drunkness %></li>
+    <% }); %>
+</ul>

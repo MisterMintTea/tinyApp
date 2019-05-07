@@ -8,6 +8,15 @@
   <title>TinyApp</title>
 </head>
 <body style="font-size:20px; padding:50px;">
-    <!-- Add EJS code here -->
+   <% var string = ""; %>
+   <% for (var keys in urls) { %>  
+  <li> <%= keys %> </li> 
+    <%} %>  
+
+   <% var string2 = ""; %>
+   <% for (var values of Object.values(urls)) { %>
+    <li> <%= values %> </li>   
+   <% } %>
+
 </body>
 </html>
