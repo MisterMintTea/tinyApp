@@ -7,9 +7,11 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 
 var urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
+  "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+//APP.GET SECTION
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -57,6 +59,17 @@ function generateRandomString() {
         .substring(2, 15)
     );
   }
+
+
+// APP.POST SECTION
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  //Add post route that removes URL resource:
+  const shortURLParam = req.params.shortURL 
+  delete urlDatabase[shortURLParam]
+  //redirect client back to urls_index page
+  res.redirect('/urls');
+});
 
 app.post("/urls", (req, res) => {
   //extract the information from the form

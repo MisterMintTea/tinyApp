@@ -21,11 +21,16 @@
   <a href="#">Create New TinyURL</a>
   <body style="font-size:20px; padding:50px;">
     <h2>My URL's THIS IS URL-INDEX</h2>
-    <% var string = ""; %> <% for (var keys in urls) { %>
-    <li><%= keys %></li>
-    <%} %> <% var string2 = ""; %> <% for (var values of Object.values(urls)) {
-    %>
-    <li><%= values %></li>
+    <% for (var keys in urls) { %>
+      <form method="POST" action="/urls/<%= keys %>/delete">FORM TAG #1
+        <h2><%= keys %> - <%= urls[keys] %></h2>
+        <button type="submit">DELETE</button>
+      </form>
+
     <% } %>
+    
+      
+    
   </body>
+  
 </html>
