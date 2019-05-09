@@ -21,10 +21,12 @@
   <a href="#">Create New TinyURL</a>
   <body style="font-size:20px; padding:50px;">
     <h2>My URL's THIS IS URL-INDEX</h2>
-    <% for (var keys in urls) { %>
-      <form method="POST" action="/urls/<%= keys %>/delete">FORM TAG #1
-        <h2><%= keys %> - <%= urls[keys] %></h2>
+    <% for (var shortURL in urls) { %>
+      <form method="POST" action="/urls/<%= shortURL %>/delete">FORM TAG #1
+        <h2><%= shortURL %> - <%= urls[shortURL] %></h2>
+        <a href="http://localhost:8080/urls/b2xVn2">EDIT</a> 
         <button type="submit">DELETE</button>
+        
       </form>
 
     <% } %>

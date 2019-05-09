@@ -11,7 +11,12 @@
   </header>
   <a href="#">Create New TinyURL THIS IS URLS-SHOW</a>
   <body>
-    <h3><%= shortURL %> </h3> 
+    <h3>ShortURL: <%= shortURL %> </h3> 
     <h3><%= longURL %> </h3>
-  </body>
+
+    <form method="POST"  action="/urls/<%= shortURL %>/edit">
+      <input type="text" name="longURL">
+      <button type="submit">Update</button>
+    </form>
+  </body> 
 </html>
