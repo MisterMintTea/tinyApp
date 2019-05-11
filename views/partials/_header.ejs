@@ -1,5 +1,7 @@
-<% if(username){ %>
-    <%= username %>
+
+
+<% if(user && usersDb){ %>
+    <%= usersDb.email %>
     <form method="POST" action="/logout">
         <button type="submit">LOG TF OUT</button>
     </form>
@@ -7,7 +9,10 @@
     <form method="POST" action="/login">
         <input type="text" name="username">
         <button type="submit">Login</button>
-    </form>
+    </form> 
  <% } %>
 
-<h1>Tiny App</h1>
+ <a href="/register" class="btn-btn primary">Register</a>
+<a href="/login" class="btn-btn primary">Login</a>
+
+<h1>Tiny App</h1> 

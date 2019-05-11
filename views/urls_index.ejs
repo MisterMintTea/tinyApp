@@ -13,16 +13,16 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
-    <title>TinyApp</title>
+    <title>TinyApp Edit Page</title>
   </head>
   <header>
     <% include partials/_header %>
   </header>
   <a href="#">Create New TinyURL</a>
   <body style="font-size:20px; padding:50px;">
-    <h2>My URL's THIS IS URL-INDEX</h2>
+    <h1><b>Edit Page - urls_index.ejs http://localhost:8080/login</b></h1>
     <% for (var shortURL in urls) { %>
-      <form method="POST" action="/urls/<%= shortURL %>/delete">FORM TAG #1
+      <form method="POST" action="/urls/<%= shortURL %>/delete"><b>Edit Form</b>
         <h2><%= shortURL %> - <%= urls[shortURL] %></h2>
         <a href="http://localhost:8080/urls/b2xVn2">EDIT</a> 
         <button type="submit">DELETE</button>
