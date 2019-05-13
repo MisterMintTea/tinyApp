@@ -18,21 +18,17 @@
   <header>
     <% include partials/_header %>
   </header>
-  <a href="#">Create New TinyURL</a>
+  <a href="http://localhost:8080/urls/new">Create New TinyURL</a>
   <body style="font-size:20px; padding:50px;">
     <h1><b>Edit Page - urls_index.ejs http://localhost:8080/login</b></h1>
     <% for (var shortURL in urls) { %>
-      <form method="POST" action="/urls/<%= shortURL %>/delete"><b>Edit Form</b>
-        <h2><%= shortURL %> - <%= urls[shortURL] %></h2>
-        <a href="http://localhost:8080/urls/b2xVn2">EDIT</a> 
-        <button type="submit">DELETE</button>
-        
-      </form>
+    <form method="POST" action="/urls/<%= shortURL %>/delete">
+      <b>Edit Form</b>
+      <h2><%= shortURL %> - <%= urls[shortURL].longURL %></h2>
+      <a href="http://localhost:8080/urls/b2xVn2">EDIT</a>
+      <button type="submit">DELETE</button>
+    </form>
 
     <% } %>
-    
-      
-    
   </body>
-  
 </html>
