@@ -25,7 +25,7 @@
     <form method="POST" action="/urls/<%= shortURL %>/delete">
       <b>Edit Form</b>
       <h2><%= shortURL %> - <%= urls[shortURL].longURL %></h2>
-      <a href="http://localhost:8080/urls/b2xVn2">EDIT</a>
+      <a href="http://localhost:8080/urls/<%= shortURL %>">EDIT</a>
       <button type="submit">DELETE</button>
     </form>
 

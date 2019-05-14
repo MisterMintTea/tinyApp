@@ -1,10 +1,10 @@
 // GLOBAL REQUIREMENTS
-const express = require("express");
-const app = express();
-const PORT = 8080; // default port 8080
-const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-const cookieSession = require('cookie-session')
+var express = require("express");
+var app = express();
+var PORT = 8080; // default port 8080
+var bodyParser = require("body-parser");
+var cookieParser = require("cookie-parser");
+var cookieSession = require('cookie-session')
 const uuid = require("uuid/v4");
 const bcrypt = require('bcrypt');
 const password = "purple-monkey-dinosaur"; // found in the req.params object
@@ -89,55 +89,37 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  if (!req.session.user_id) {
+  if (undefined === req.cookies["user_id"]) {
     res.redirect("/login");
     return;
   }
   let templateVars = {
     urls: urlDatabase,
-    userDb: req.session.user_id
+    userDb: req.cookies["user_id"]
   };
 
   res.render("urls_new", templateVars);
 });
 
-// app.get("/urls/new", (req, res) => {
-//   if (undefined === req.cookies["user_id"]) {
-//     res.redirect("/login");
-//     return;
-//   }
-//   let templateVars = {
-//     urls: urlDatabase,
-//     userDb: req.cookies["user_id"]
-//   };
-
-//   res.render("urls_new", templateVars);
-// });
-
 app.get("/urls", (req, res) => {
   let templateVars = {
-    userDb: users[req.session.user_id],
-    urls: urlsForUser(req.session.user_id),
+    userDb: users[req.cookies["user_id"]],
+    urls: urlsForUser(req.cookies["user_id"]),
   };
   res.render("urls_index", templateVars);
 });
 
 // New Route
-// app.get("/urls/:shortURL", (req, res) => {
-//   const shortURLParam = req.params.shortURL;
-//   // console.log(shortURLParam); // Refreshing the page
-//   console.log(urlDatabase[shortURLParam])
-//   if(!urlDatabase[shortURLParam]) {
-//     return res.status(404).send("Error 404")
-//   }
-// res.redirect(urlDatabase[shortURLParam].longURL)
-//   // const templateVars = {
-//   //   userDb: req.session.user_id,
-//   //   shortURL: shortURLParam,
-//   //   longURL: urlDatabase[shortURLParam].longURL
-//   // };
-//   // res.render("urls_show", templateVars);
-// });
+app.get("/urls/:shortURL", (req, res) => {
+  const shortURLParam = req.params.shortURL;
+  // console.log(shortURLParam); // Refreshing the page
+  const templateVars = {
+    userDb: req.cookies["user_id"],
+    shortURL: shortURLParam,
+    longURL: urlDatabase[shortURLParam].longURL
+  };
+  res.render("urls_show", templateVars);
+});
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
@@ -166,7 +148,7 @@ app.get("/register", (req, res) => {
 app.get("/login", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    user: req.session.user_id
+    user: req.cookies["user_id"]
   };
   res.render("urls_login", templateVars);
 });
@@ -187,76 +169,34 @@ function generateRandomString() {
 app.post("/urls/:shortURL/delete", (req, res) => {
   //Add post route that removes URL resource:
   const shortURLParam = req.params.shortURL;
-  if(req.session.user_id) {
+  if(req.cookies["user_id"]) {
     delete urlDatabase[shortURLParam];
     res.redirect("/urls")
+
   } else {
     res.send("Error: Please be logged in")
   }
 });
 
 app.post("/urls", (req, res) => {
-  console.log("This is creating new URL")
   //extract the information from the form
   // const shortURL = req.body.shortURL;
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
-  console.log(shortURL);
-  urlDatabase[shortURL] = { longURL: longURL, userID: req.session.user_id };
+  urlDatabase[shortURL] = { longURL: longURL, userID: req.cookies["user_id"] };
+  shortURLBelongsToUser("i3BoGr", req.cookies["user_id"]);
   res.redirect("/urls/" + shortURL);
   //Create new entry in url database
 });
 
-app.get("/urls/:shortURL/", (req, res) => {
-  // urlDatabase[req.params.shortURL] = req.body.longURL;
-  let templateVars = {
-    urls: urlDatabase,
-    userDb: req.session.user_id,
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL
-  };
-  if(req.session.user_id) {
-    res.render("urls_show", templateVars);
-  } else {
-    res.send("Error: Please be logged in")
-  }
+app.post("/urls/:shortURL/edit", (req, res) => {
+  urlDatabase[req.params.shortURL] = req.body.longURL;
+  if(req.cookies["user_id"]) {
+
+  } else
+
+  res.redirect("/urls/" + req.params.shortURL);
 });
-
-app.post("/urls/:shortURL/", (req, res) => {
-  // urlDatabase[req.params.shortURL] = req.body.longURL;
-  let shortURL = req.params.shortURL
-  
-  let templateVars = {
-    urls: urlDatabase,
-    userDb: req.session.user_id,
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL
-  };
-  // if(req.session.user_id === urlDatabase[req.params.shortURL['userID']]) {
-  //   urlDatabase[shortURL].longURL = req.body.longURL;
-  //   res.redirect("/urls");
-  // } else {
-  //   res.send("Error: Please be logged in")
-  // }
-
-  if(req.session.user_id) {
-    urlDatabase[shortURL].longURL = req.body.longURL  ; 
-    res.redirect("/urls");
-  } else {
-    res.send("Error: Please be logged in");
-  }
-});
-
-// Access req.params.shortURL === urlDatabase[shortURL].longURL 
-
-// app.put("/urls/:shortURL", (req, res) => {
-//   const shortURL = req.params.shortURL;
-//   if (urlDatabase[shortURL]["userID"] === req.session["user ID"]) {
-//     /// updating long URL for a given short URL
-//     urlDatabase[shortURL]["longURL"] = req.body.longURL;
-//   }
-//   res.redirect("/urls");
-// });
 
 app.post("/login", (req, res) => {
   const user = findUser(req.body.email);
@@ -268,7 +208,7 @@ app.post("/login", (req, res) => {
     } else if (!passwordOk) {
       res.status(403).send("Password incorrect");
     } else {
-      req.session.user_id = user.id
+      res.cookie("user_id", user.id);
       res.redirect("/urls");
     }
 });
@@ -276,14 +216,14 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  req.session = null;
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
 // Create a Registration Handler w1d4 help
 app.post("/register", (req, res) => {
-  const emailCheck = req.body.email;
-  const passwordCheck = req.body.password;
+  var emailCheck = req.body.email;
+  var passwordCheck = req.body.password;
   if (!emailCheck || !passwordCheck) {
     res.status(400).send({ error: "You Shall not Pass" });
   } else if (findUser(emailCheck)) {
@@ -291,7 +231,7 @@ app.post("/register", (req, res) => {
   } else {
     bcrypt.hash(req.body.password, 10, function(err, hash) {
       const registerid = addNewUser(req.body.email, hash);
-      req.session.user_id = registerid
+    res.cookie("user_id", registerid);
     res.redirect("/urls");
     });
     
@@ -301,3 +241,6 @@ app.post("/register", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+
+req.session.user_id
