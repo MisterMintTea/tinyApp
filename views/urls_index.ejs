@@ -20,7 +20,7 @@
   </header>
   <a href="http://localhost:8080/urls/new">Create New TinyURL</a>
   <body style="font-size:20px; padding:50px;">
-    <h1><b>Edit Page - urls_index.ejs http://localhost:8080/login</b></h1>
+    <h1><b>Edit Page</b></h1>
     <% for (var shortURL in urls) { %>
     <form method="POST" action="/urls/<%= shortURL %>/delete">
       <b>Edit Form</b>

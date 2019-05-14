@@ -32,13 +32,11 @@ const users = {
   userRandomID: {
     id: "userRandomID",
     email: "user@example.com",
-    // password: "purple-monkey-dinosaur"
     password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
   },
   user2RandomID: {
     id: "user2RandomID",
     email: "abc@example.com",
-    // password: "abc"
     password: bcrypt.hashSync("abc", 10)
   }
 };
@@ -53,7 +51,7 @@ const addNewUser = (email, password) => {
     password: bcrypt.hashSync(password, 10)
   };
 
-  users[id] = newUser; // users[id] what is users[id] here
+  users[id] = newUser;
 
   return id;
 };
@@ -232,12 +230,6 @@ app.post("/urls/:shortURL/", (req, res) => {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL
   };
-  // if(req.session.user_id === urlDatabase[req.params.shortURL['userID']]) {
-  //   urlDatabase[shortURL].longURL = req.body.longURL;
-  //   res.redirect("/urls");
-  // } else {
-  //   res.send("Error: Please be logged in")
-  // }
 
   if(req.session.user_id) {
     urlDatabase[shortURL].longURL = req.body.longURL  ; 
@@ -246,17 +238,6 @@ app.post("/urls/:shortURL/", (req, res) => {
     res.send("Error: Please be logged in");
   }
 });
-
-// Access req.params.shortURL === urlDatabase[shortURL].longURL 
-
-// app.put("/urls/:shortURL", (req, res) => {
-//   const shortURL = req.params.shortURL;
-//   if (urlDatabase[shortURL]["userID"] === req.session["user ID"]) {
-//     /// updating long URL for a given short URL
-//     urlDatabase[shortURL]["longURL"] = req.body.longURL;
-//   }
-//   res.redirect("/urls");
-// });
 
 app.post("/login", (req, res) => {
   const user = findUser(req.body.email);
@@ -280,7 +261,6 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-// Create a Registration Handler w1d4 help
 app.post("/register", (req, res) => {
   const emailCheck = req.body.email;
   const passwordCheck = req.body.password;
