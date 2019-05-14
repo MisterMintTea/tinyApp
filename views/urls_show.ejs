@@ -9,14 +9,16 @@
   <header>
     <% include partials/_header %>
   </header>
-  <a href="#">Create New TinyURL THIS IS URLS-SHOW</a>
+  <a href="#">Create New TinyURL</a>
   <body>
-    <h3>ShortURL: <%= shortURL %> </h3> 
-    <h3><%= longURL %> </h3>
+    <h1>Update Page urls_show.ejs</h1>
+    <h2>http://localhost:8080/urls/show</h2>
+    <h3>ShortURL: <%= shortURL %></h3>
+    <h3><%= longURL %></h3>
 
-    <form method="POST"  action="/urls/<%= shortURL %>/edit">
-      <input type="text" name="longURL">
+    <form method="POST" action="/urls/<%= shortURL %>">
+      <input type="text" name="longURL" />
       <button type="submit">Update</button>
     </form>
-  </body> 
+  </body>
 </html>

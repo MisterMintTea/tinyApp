@@ -1,13 +1,12 @@
-<% if(username){ %>
-    <%= username %>
-    <form method="POST" action="/logout">
-        <button type="submit">LOG TF OUT</button>
-    </form>
-  <% } else { %>  
-    <form method="POST" action="/login">
-        <input type="text" name="username">
-        <button type="submit">Login</button>
-    </form>
- <% } %>
+<% if(userDb){ %>
+<h1>Welcome!</h1>
+<%= userDb.email %>
+<form method="POST" action="/logout">
+  <button type="submit">LOG OUT</button>
+</form>
+<% } else { %>
+<a href="/register" class="btn-btn primary">Register</a>
+<a href="/login" class="btn-btn primary">Login</a>
+<% } %>
 
 <h1>Tiny App</h1>
