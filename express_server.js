@@ -95,14 +95,13 @@ app.get("/urls/new", (req, res) => {
     return;
   }
   let templateVars = {
-    urls: urlDatabase,
     userDb: req.session.user_id
   };
 
   res.render("urls_new", templateVars);
 });
 
-// User's Homepage
+// Endpoints for list of url for the logged in user.
 app.get("/urls", (req, res) => {
   let templateVars = {
     userDb: users[req.session.user_id],
@@ -118,7 +117,6 @@ app.get("/urls.json", (req, res) => {
 // If user is logged in, displays Update page. Otherwise, throws error.
 app.get("/urls/:shortURL/", (req, res) => {
   let templateVars = {
-    urls: urlDatabase,
     userDb: req.session.user_id,
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL
@@ -148,7 +146,6 @@ app.get("/register", (req, res) => {
 // TinyApp Login page
 app.get("/login", (req, res) => {
   let templateVars = {
-    urls: urlDatabase,
     user: req.session.user_id
   };
   res.render("login", templateVars);
@@ -190,14 +187,6 @@ app.post("/urls", (req, res) => {
 // Allows user to update URL if logged in. Otherwise, throws an error.
 app.post("/urls/:shortURL/", (req, res) => {
   let shortURL = req.params.shortURL;
-
-  let templateVars = {
-    urls: urlDatabase,
-    userDb: req.session.user_id,
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL
-  };
-
   if (req.session.user_id) {
     urlDatabase[shortURL].longURL = req.body.longURL;
     res.redirect("/urls");
