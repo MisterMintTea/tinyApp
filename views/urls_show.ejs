@@ -4,20 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>TinyApp URLS-SHOW</title>
+    <title>TinyApp</title>
   </head>
   <header>
     <% include partials/_header %>
   </header>
-  <a href="#">Create New TinyURL</a>
+  <a href="http://localhost:8080/urls/new">Create New TinyURL</a>
   <body>
-    <h1>Update Page urls_show.ejs</h1>
-    <h2>http://localhost:8080/urls/show</h2>
-    <h3>ShortURL: <%= shortURL %></h3>
-    <h3><%= longURL %></h3>
-
+    <h1>Update Page</h1>
     <form method="POST" action="/urls/<%= shortURL %>">
-      <input type="text" name="longURL" />
+      <input placeholder="<%= longURL %>" type="text" name="longURL" />
       <button type="submit">Update</button>
     </form>
   </body>

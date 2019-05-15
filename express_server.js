@@ -1,33 +1,35 @@
-// GLOBAL REQUIREMENTS
+// GLOBAL REQUIREMENTS //
 const express = require("express");
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const cookieSession = require('cookie-session')
+const cookieSession = require("cookie-session");
 const uuid = require("uuid/v4");
-const bcrypt = require('bcrypt');
-const password = "purple-monkey-dinosaur"; // found in the req.params object
+const bcrypt = require("bcrypt");
+const password = "purple-monkey-dinosaur";
 const hashedPassword = bcrypt.hashSync(password, 10);
 
-
-// APP SET
+// APP SET //
 app.set("view engine", "ejs");
 
-// APP USE
+// APP USE //
 app.use(cookieParser());
-app.use(cookieSession({
-  name: 'session',
-  keys: ["secret"],
-}));
+app.use(
+  cookieSession({
+    name: "session",
+    keys: ["secret"]
+  })
+);
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// DATABASE
+// DEFAULT URL DATABASE //
 const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
   i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 
+// DEFAULT USERS DATABASE //
 const users = {
   userRandomID: {
     id: "userRandomID",
@@ -41,14 +43,16 @@ const users = {
   }
 };
 
-// FUNCTION SECTION
+// FUNCTIONS SECTION //
+
+// Creates a newUser object && places it into users database
 const addNewUser = (email, password) => {
   const id = uuid();
 
   const newUser = {
     id,
     email,
-    password: bcrypt.hashSync(password, 10)
+    password
   };
 
   users[id] = newUser;
@@ -56,6 +60,7 @@ const addNewUser = (email, password) => {
   return id;
 };
 
+// Returns a user's object if it exist in the users database
 function findUser(email) {
   for (let userid in users) {
     if (email === users[userid].email) {
@@ -65,10 +70,10 @@ function findUser(email) {
   return false;
 }
 
+// Loops through the urlDatabase && returns a filtered object
 function urlsForUser(id) {
-
   const urlDb = {};
-  for(let shortURL in urlDatabase) {
+  for (let shortURL in urlDatabase) {
     if (urlDatabase[shortURL].userID === id) {
       urlDb[shortURL] = urlDatabase[shortURL];
     }
@@ -76,16 +81,14 @@ function urlsForUser(id) {
   return urlDb;
 }
 
-function shortURLBelongsToUser (shortURL, userId) {
-  return (userId === urlDatabase[shortURL].userID) 
-}
+// APP.GET SECTION //
 
-//APP.GET SECTION
-
+// Directs user on route to Homepage
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect("/urls");
 });
 
+// If user is not logged in, redirects to login page. Otherwise, directs to Create TinyURL page.
 app.get("/urls/new", (req, res) => {
   if (!req.session.user_id) {
     res.redirect("/login");
@@ -99,74 +102,56 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-// app.get("/urls/new", (req, res) => {
-//   if (undefined === req.cookies["user_id"]) {
-//     res.redirect("/login");
-//     return;
-//   }
-//   let templateVars = {
-//     urls: urlDatabase,
-//     userDb: req.cookies["user_id"]
-//   };
-
-//   res.render("urls_new", templateVars);
-// });
-
+// User's Homepage
 app.get("/urls", (req, res) => {
   let templateVars = {
     userDb: users[req.session.user_id],
-    urls: urlsForUser(req.session.user_id),
+    urls: urlsForUser(req.session.user_id)
   };
   res.render("urls_index", templateVars);
 });
-
-// New Route
-// app.get("/urls/:shortURL", (req, res) => {
-//   const shortURLParam = req.params.shortURL;
-//   // console.log(shortURLParam); // Refreshing the page
-//   console.log(urlDatabase[shortURLParam])
-//   if(!urlDatabase[shortURLParam]) {
-//     return res.status(404).send("Error 404")
-//   }
-// res.redirect(urlDatabase[shortURLParam].longURL)
-//   // const templateVars = {
-//   //   userDb: req.session.user_id,
-//   //   shortURL: shortURLParam,
-//   //   longURL: urlDatabase[shortURLParam].longURL
-//   // };
-//   // res.render("urls_show", templateVars);
-// });
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
+// If user is logged in, displays Update page. Otherwise, throws error.
+app.get("/urls/:shortURL/", (req, res) => {
+  let templateVars = {
+    urls: urlDatabase,
+    userDb: req.session.user_id,
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL].longURL
+  };
+  if (req.session.user_id) {
+    res.render("urls_show", templateVars);
+  } else {
+    res.send("Error: Please be logged in");
+  }
 });
 
+// Directs user to longURL page
 app.get("/u/:shortURL", (req, res) => {
   const urlData = urlDatabase[req.params.shortURL];
   if (urlData) {
     res.redirect(urlData.longURL);
   } else {
-    res.redirect("/")
+    res.redirect("/");
   }
-
-  // no restrictions needed, && if the user is login
 });
 
+// TinyApp Registration page
 app.get("/register", (req, res) => {
-  res.render("urls_register");
+  res.render("register");
 });
 
-//EDIT PAGE http://localhost:8080/login
+// TinyApp Login page
 app.get("/login", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
     user: req.session.user_id
   };
-  res.render("urls_login", templateVars);
+  res.render("login", templateVars);
 });
 
 function generateRandomString() {
@@ -180,104 +165,88 @@ function generateRandomString() {
   );
 }
 
-// APP.POST SECTION
+// APP.POST SECTION //
 
+// Delete button on Homepage and refreshes the page if user is logged in. Otherwise, sends an error.
 app.post("/urls/:shortURL/delete", (req, res) => {
-  //Add post route that removes URL resource:
   const shortURLParam = req.params.shortURL;
-  if(req.session.user_id) {
+  if (req.session.user_id) {
     delete urlDatabase[shortURLParam];
-    res.redirect("/urls")
-  } else {
-    res.send("Error: Please be logged in")
-  }
-});
-
-app.post("/urls", (req, res) => {
-  console.log("This is creating new URL")
-  //extract the information from the form
-  // const shortURL = req.body.shortURL;
-  const longURL = req.body.longURL;
-  const shortURL = generateRandomString();
-  console.log(shortURL);
-  urlDatabase[shortURL] = { longURL: longURL, userID: req.session.user_id };
-  res.redirect("/urls/" + shortURL);
-  //Create new entry in url database
-});
-
-app.get("/urls/:shortURL/", (req, res) => {
-  // urlDatabase[req.params.shortURL] = req.body.longURL;
-  let templateVars = {
-    urls: urlDatabase,
-    userDb: req.session.user_id,
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL
-  };
-  if(req.session.user_id) {
-    res.render("urls_show", templateVars);
-  } else {
-    res.send("Error: Please be logged in")
-  }
-});
-
-app.post("/urls/:shortURL/", (req, res) => {
-  // urlDatabase[req.params.shortURL] = req.body.longURL;
-  let shortURL = req.params.shortURL
-  
-  let templateVars = {
-    urls: urlDatabase,
-    userDb: req.session.user_id,
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL
-  };
-
-  if(req.session.user_id) {
-    urlDatabase[shortURL].longURL = req.body.longURL  ; 
     res.redirect("/urls");
   } else {
     res.send("Error: Please be logged in");
   }
 });
 
+// Creates a new URL
+app.post("/urls", (req, res) => {
+  const longURL = req.body.longURL;
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = { longURL: longURL, userID: req.session.user_id };
+  res.redirect("/urls/" + shortURL);
+});
+
+
+// Allows user to update URL if logged in. Otherwise, throws an error.
+app.post("/urls/:shortURL/", (req, res) => {
+  let shortURL = req.params.shortURL;
+
+  let templateVars = {
+    urls: urlDatabase,
+    userDb: req.session.user_id,
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL].longURL
+  };
+
+  if (req.session.user_id) {
+    urlDatabase[shortURL].longURL = req.body.longURL;
+    res.redirect("/urls");
+  } else {
+    res.send("Error: Please be logged in");
+  }
+});
+
+// Throws error if invalid email and password, otherwise user logs in.
 app.post("/login", (req, res) => {
   const user = findUser(req.body.email);
   const passwordInc = req.body.password;
 
   bcrypt.compare(passwordInc, user.password, function(err, passwordOk) {
     if (!user) {
-      res.status(403).send("Email invalid");
+      res.status(403).send("Please enter a valid email and password!");
     } else if (!passwordOk) {
-      res.status(403).send("Password incorrect");
+      res.status(403).send("Sorry, wrong credentials! Please try again!");
     } else {
-      req.session.user_id = user.id
+      req.session.user_id = user.id;
       res.redirect("/urls");
     }
-});
-  
+  });
 });
 
+// Logs the user out and clears session.
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
 });
 
+// Throws error if email exist or invalid email and password. Otherwise, registers newUser.
 app.post("/register", (req, res) => {
   const emailCheck = req.body.email;
   const passwordCheck = req.body.password;
   if (!emailCheck || !passwordCheck) {
-    res.status(400).send({ error: "You Shall not Pass" });
+    res.status(400).send("Please enter a valid email and password!");
   } else if (findUser(emailCheck)) {
     res.status(400).send("Email already exist");
   } else {
     bcrypt.hash(req.body.password, 10, function(err, hash) {
       const registerid = addNewUser(req.body.email, hash);
-      req.session.user_id = registerid
-    res.redirect("/urls");
+      req.session.user_id = registerid;
+      res.redirect("/urls");
     });
-    
   }
 });
 
+// Service
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
