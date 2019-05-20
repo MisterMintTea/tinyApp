@@ -5,7 +5,7 @@ const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cookieSession = require("cookie-session");
-const uuid = require("uuid/v4");
+// const uuid = require("uuid/v4");
 const bcrypt = require("bcrypt");
 const password = "purple-monkey-dinosaur";
 const hashedPassword = bcrypt.hashSync(password, 10);
@@ -22,6 +22,17 @@ app.use(
   })
 );
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// app.get("/error", (req, res) => {
+//   res.render("error")
+// })
+
+// app.use((req,res,next) => {
+//   if(!req.session.user_id) {
+//     res.redirect('/error') 
+//   } 
+//   next();
+// })
 
 // DEFAULT URL DATABASE //
 const urlDatabase = {
@@ -47,7 +58,7 @@ const users = {
 
 // Creates a newUser object && places it into users database
 const addNewUser = (email, password) => {
-  const id = uuid();
+  const id = generateRandomString();
 
   const newUser = {
     id,
@@ -155,10 +166,7 @@ function generateRandomString() {
   return (
     Math.random()
       .toString(36)
-      .substring(2, 15) +
-    Math.random()
-      .toString(36)
-      .substring(2, 15)
+      .substring(2, 8) 
   );
 }
 

@@ -9,9 +9,11 @@
   <header>
     <% include partials/_header %>
   </header>
-  <a href="http://localhost:8080/urls/new">Create New TinyURL</a>
   <body>
-    <h1>Update Page</h1>
+    <a href="http://localhost:8080/urls">Return to Homepage!</a>
+    <h1>Update URL</h1>
+    <h3>Here is your shortURL: <%= shortURL %></h3>
+    <h4>Would you like to update <%= longURL %>?</h4>
     <form method="POST" action="/urls/<%= shortURL %>">
       <input placeholder="<%= longURL %>" type="text" name="longURL" />
       <button type="submit">Update</button>
